@@ -107,13 +107,20 @@ void HeartsField::evaluateTrick(){
 }
 
 // Evaluates the points of the bots, and determines who is in the lead.
-// A bot wins if
+// A bot wins if it has the lowest score by the time 100 points are obtained
+// by a player.
 void HeartsField::evaluatePoints(){
   int lowest = INT_MAX;
-  int winner = 0;
   int highest = 0;
+  int winner = 0;
   int loser = 0;
   for(int i = 0; i < amtOfPlayers; i++){
+    if(bots[i].shotTheMoon()){
+      bots[i].addPoints(-26);
+      for(int j = 1; j < amtOfPlayers; i++)
+        bots[(i+j)%amtOfPlayers].addPoints(26);
+    }
+
     std::cout << "Bot " << i << " has " << bots[i].getPoints() <<
     ((bots[i].getPoints() == 1) ? " point." : " points.") << std::endl;
     if(bots[i].getPoints() < lowest){
@@ -124,6 +131,7 @@ void HeartsField::evaluatePoints(){
       highest = bots[i].getPoints();
       loser = i;
     }
+    bots[i].backupPoints();
   }
   if(bots[loser].getPoints() < 100)
     std::cout << "Bot " << winner << " is in the lead!" << std::endl;

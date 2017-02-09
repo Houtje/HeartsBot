@@ -11,6 +11,7 @@
 
 HeartsBot::HeartsBot(){
   handSize = 13;
+  oldPoints = 0;
   points = 0;
   starting = false;
   for(int i = 0; i < handSize; i++)
@@ -27,6 +28,10 @@ void HeartsBot::setStarting(){
 
 void HeartsBot::addPoints(int amount){
   points += amount;
+}
+
+void HeartsBot::backupPoints(){
+  oldPoints = points;
 }
 
 int HeartsBot::getPoints(){
@@ -109,6 +114,13 @@ bool HeartsBot::handContains(int card){
 // Checks whether the given card belongs to a given suit.
 bool HeartsBot::checkSuit(int card, char suit){
   return (intToCard(card).find(suit) != std::string::npos);
+}
+
+// Checks whether the bot has 'shot the moon': this means the bot
+// has obtained all the penalty cards.
+bool HeartsBot::shotTheMoon(){
+  return ((oldPoints - points) == 26) ? true : false;
+
 }
 
 // Plays a random card, and removes it from the hand.

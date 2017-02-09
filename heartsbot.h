@@ -10,10 +10,12 @@ class HeartsBot{
     void callHand(int i);
     void receiveCard(int card);
     void addPoints(int amount);
+    void backupPoints();
     bool handContains(int card);
     bool handEmpty();
     bool justHearts();
     bool checkSuit(int card, char suit);
+    bool shotTheMoon();
     int passCard();
     int getPoints();
     int playCard(char suit, bool heartsBroken, bool firstTrick);
@@ -21,6 +23,7 @@ class HeartsBot{
   private:
     int hand[13];
     int handSize;
+    int oldPoints;
     int points;
     bool starting;
 };
