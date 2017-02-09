@@ -1,5 +1,4 @@
-// Source code for HeartsBot
-// By Joris Teunisse (Last edit: 2-2-2017)
+// Source code for HeartsBot, by Joris Teunisse
 #include "heartsbot.h"
 #include <ctime>
 #include <cstdlib>

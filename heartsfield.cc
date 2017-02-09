@@ -1,5 +1,4 @@
-// Source code for HeartsField
-// By Joris Teunisse (Last edit: 2-2-2017)
+// Source code for HeartsField, by Joris Teunisse
 #include "heartsfield.h"
 #include <ctime>
 #include <cstdlib>

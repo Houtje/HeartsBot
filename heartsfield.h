@@ -1,5 +1,4 @@
-// Header for HeartsField
-// By Joris Teunisse (Last edit: 2-2-2017)
+// Header for HeartsField, by Joris Teunisse
 #include "heartsbot.h"
 
 class HeartsField{

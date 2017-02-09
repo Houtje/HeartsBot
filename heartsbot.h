@@ -1,5 +1,4 @@
-// Header for HeartsBot
-// By Joris Teunisse (Last edit: 2-2-2017)
+// Header for HeartsBot, by Joris Teunisse
 #include <string>
 
 class HeartsBot{

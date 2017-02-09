@@ -1,5 +1,4 @@
-// Source code for the main function of the Hearts program
-// By Joris Teunisse (Last edit: 2-2-2017)
+// Source code for the main function of the Hearts program, by Joris Teunisse
 #include "heartsfield.h"
 
 int main(){
