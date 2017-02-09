@@ -13,6 +13,8 @@
 HeartsField::HeartsField(){
   amtOfCards = 52;
   amtOfPlayers = 4;
+  gameNr = 0;
+  gameWon = false;
   for(int i = 0; i < 4; i++)
     cardsOnTable[i] = 0;
 }
@@ -70,7 +72,7 @@ void HeartsField::passCards(){
     passedCards[i] = bots[i/3].passCard();
   for(int i = 0; i < amtOfPlayers; i++){
     for(int j = 0; j < 3; j++)
-      bots[(i+1)%4].receiveCard(passedCards[i*3+j]);
+      bots[(i+gameNr)%4].receiveCard(passedCards[i*3+j]);
   }
 
   std::cout << "Hands after passing:" << std::endl;
@@ -105,9 +107,12 @@ void HeartsField::evaluateTrick(){
 }
 
 // Evaluates the points of the bots, and determines who is in the lead.
+// A bot wins if
 void HeartsField::evaluatePoints(){
   int lowest = INT_MAX;
   int winner = 0;
+  int highest = 0;
+  int loser = 0;
   for(int i = 0; i < amtOfPlayers; i++){
     std::cout << "Bot " << i << " has " << bots[i].getPoints() <<
     ((bots[i].getPoints() == 1) ? " point." : " points.") << std::endl;
@@ -115,8 +120,17 @@ void HeartsField::evaluatePoints(){
       lowest = bots[i].getPoints();
       winner = i;
     }
+    if(bots[i].getPoints() > highest){
+      highest = bots[i].getPoints();
+      loser = i;
+    }
   }
-  std::cout << "Bot " << winner << " is in the lead!" << std::endl;
+  if(bots[loser].getPoints() < 100)
+    std::cout << "Bot " << winner << " is in the lead!" << std::endl;
+  else{
+    std::cout << "Bot " << winner << " has won!" << std::endl;
+    gameWon = true;
+  }
 }
 
 // Play a game of Hearts.
@@ -174,17 +188,22 @@ void HeartsField::deal(){
     bots[i / handSize].addToHand(deck[i]);
 
   // Hearts have not yet been broken; has to be reset for consecutive games.
+  // Also, it is the first trick, and the next game.
   heartsBroken = false;
   firstTrick = true;
+  gameNr++;
 }
 
 // Sets up a game of Hearts.
 void HeartsField::setup(){
   srand(time(NULL));
-  for(int i = 0; i < 3; i++){
+  int i = 0;
+  while(!gameWon){
     std::cout << "Game " << i << " start." << std::endl;
     deal();
     playGame();
-    std::cout << "End of game " << i << "." << std::endl << std::endl;
+    if(!gameWon)
+      std::cout << "End of game " << i << "." << std::endl << std::endl;
+    i++;
   }
 }

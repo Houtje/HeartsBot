@@ -19,7 +19,9 @@ class HeartsField{
     int amtOfCards;
     int amtOfPlayers;
     int turn;
+    int gameNr;
     char suit;
     bool heartsBroken;
     bool firstTrick;
+    bool gameWon;
 };
