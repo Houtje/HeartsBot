@@ -1,6 +1,8 @@
 // Header for HeartsBot, by Joris Teunisse
 #include <string>
 
+#define HANDSIZE 13
+
 class HeartsBot{
   public:
     HeartsBot();
@@ -21,8 +23,7 @@ class HeartsBot{
     int playCard(char suit, bool heartsBroken, bool firstTrick);
     std::string intToCard(int i);
   private:
-    int hand[13];
-    int handSize;
+    int hand[HANDSIZE];
     int oldPoints;
     int points;
     bool starting;

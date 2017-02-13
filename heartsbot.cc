@@ -10,11 +10,10 @@
         (std::ostringstream() << std::dec << x)).str()
 
 HeartsBot::HeartsBot(){
-  handSize = 13;
   oldPoints = 0;
   points = 0;
   starting = false;
-  for(int i = 0; i < handSize; i++)
+  for(int i = 0; i < HANDSIZE; i++)
     hand[i] = 0;
 }
 
@@ -66,7 +65,7 @@ std::string HeartsBot::intToCard(int i){
 
 // Receive a card and add it to the hand.
 void HeartsBot::receiveCard(int card){
-  for(int j = 0; j < handSize; j++){
+  for(int j = 0; j < HANDSIZE; j++){
     if(hand[j] == 0){
       hand[j] = card;
       break;
@@ -74,19 +73,20 @@ void HeartsBot::receiveCard(int card){
   }
 }
 
-// Passes a card to the field.
+// Passes a random card to the field.
 int HeartsBot::passCard(){
-  int randomCard = rand() % handSize;
+  int passedCard = 0;
+  int randomCard = rand() % HANDSIZE;
   while(hand[randomCard] == 0)
-    randomCard = rand() % handSize;
-  int passedCard = hand[randomCard];
+    randomCard = rand() % HANDSIZE;
+  passedCard = hand[randomCard];
   hand[randomCard] = 0;
   return passedCard;
 }
 
 // Check whether the hand is empty.
 bool HeartsBot::handEmpty(){
-  for(int i = 0; i < handSize; i++){
+  for(int i = 0; i < HANDSIZE; i++){
     if(hand[i] != 0)
       return false;
   }
@@ -95,7 +95,7 @@ bool HeartsBot::handEmpty(){
 
 // Checks whether the hand only contains hearts.
 bool HeartsBot::justHearts(){
-  for(int i = 0; i < handSize; i++){
+  for(int i = 0; i < HANDSIZE; i++){
     if(!(checkSuit(hand[i], 'h') || hand[i] == 0))
       return false;
   }
@@ -104,7 +104,7 @@ bool HeartsBot::justHearts(){
 
 // Checks whether the hand contains a card.
 bool HeartsBot::handContains(int card){
-  for(int i = 0; i < handSize; i++){
+  for(int i = 0; i < HANDSIZE; i++){
     if(hand[i] == card)
       return true;
   }
@@ -120,7 +120,6 @@ bool HeartsBot::checkSuit(int card, char suit){
 // has obtained all the penalty cards.
 bool HeartsBot::shotTheMoon(){
   return ((oldPoints - points) == 26) ? true : false;
-
 }
 
 // Plays a random card, and removes it from the hand.
@@ -130,7 +129,7 @@ bool HeartsBot::shotTheMoon(){
 int HeartsBot::playCard(char suit, bool heartsBroken, bool firstTrick){
   if(starting){
     // Play the opening card.
-    for(int i = 0; i < handSize; i++){
+    for(int i = 0; i < HANDSIZE; i++){
       if(hand[i] == 2){
         hand[i] = 0;
         starting = false;
@@ -144,7 +143,9 @@ int HeartsBot::playCard(char suit, bool heartsBroken, bool firstTrick){
     int card = 0;
     int toPlay = 0;
     if(suit != '$'){
-      for(int i = 0; i < handSize; i++){
+      // Is always the first card of the suit: however, since the cards
+      // are placed into the hand in a random order this should be no problem.
+      for(int i = 0; i < HANDSIZE; i++){
         if(checkSuit(hand[i], suit)){
           toPlay = i;
           card = hand[i];
@@ -152,7 +153,7 @@ int HeartsBot::playCard(char suit, bool heartsBroken, bool firstTrick){
       }
     }
     while(card == 0){
-      toPlay = rand() % handSize;
+      toPlay = rand() % HANDSIZE;
       // The card can be played if:
       // -It is not Hearts or the Queen of Spades on the first trick
       // -It is not the first card in the trick
@@ -170,7 +171,7 @@ int HeartsBot::playCard(char suit, bool heartsBroken, bool firstTrick){
 
 // Adds a card to the hand of the bot.
 void HeartsBot::addToHand(int card){
-  for(int i = 0; i < handSize; i++){
+  for(int i = 0; i < HANDSIZE; i++){
     if(hand[i] == 0){
       hand[i] = card;
       return;
@@ -183,7 +184,7 @@ void HeartsBot::addToHand(int card){
 // between different bots.
 void HeartsBot::callHand(int i){
   std::cout << "Hand of bot " << i << ":" << std::endl;
-  for(int j = 0; j < handSize; j++)
+  for(int j = 0; j < HANDSIZE; j++)
     std::cout << intToCard(hand[j]) << " ";
   std::cout << std::endl;
 }

@@ -1,11 +1,13 @@
 // Header for HeartsField, by Joris Teunisse
 #include "heartsbot.h"
 
+#define AMTOFPLAYERS 4
+
 class HeartsField{
   public:
     HeartsField();
     ~HeartsField();
-    void setup();
+    void setup(char *parms[]);
     void deal();
     void playGame();
     void passCards();
@@ -14,8 +16,8 @@ class HeartsField{
     char determineSuit(int card);
     std::string intToCard(int i);
   private:
-    HeartsBot bots[4];
-    int cardsOnTable[4];
+    HeartsBot bots[AMTOFPLAYERS];
+    int cardsOnTable[AMTOFPLAYERS];
     int amtOfCards;
     int amtOfPlayers;
     int turn;
