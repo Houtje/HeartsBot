@@ -143,13 +143,20 @@ int HeartsBot::playCard(char suit, bool heartsBroken, bool firstTrick){
     int card = 0;
     int toPlay = 0;
     if(suit != '$'){
-      // Is always the first card of the suit: however, since the cards
-      // are placed into the hand in a random order this should be no problem.
+      // Checks whether the player has cards of the suit which is to be played,
+      // and if so plays a random one.
+      int validCards[HANDSIZE] = {0};
+      int amtValid = 0;
       for(int i = 0; i < HANDSIZE; i++){
         if(checkSuit(hand[i], suit)){
-          toPlay = i;
-          card = hand[i];
+          validCards[amtValid] = i;
+          amtValid++;
         }
+      }
+      if(amtValid != 0){
+        int i = rand() % amtValid;
+        toPlay = validCards[i];
+        card = hand[toPlay];
       }
     }
     while(card == 0){
