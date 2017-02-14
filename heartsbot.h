@@ -20,7 +20,7 @@ class HeartsBot{
     bool shotTheMoon();
     int passCard();
     int getPoints();
-    int playCard(char suit, bool heartsBroken, bool firstTrick);
+    int playRandomCard(char suit, bool heartsBroken, bool firstTrick);
     std::string intToCard(int i);
   private:
     int hand[HANDSIZE];

@@ -134,6 +134,30 @@ void HeartsField::evaluatePoints(){
   }
 }
 
+int HeartsField::playMCCard(int botNr){
+  char s = (turn == botNr) ? '$' : suit;
+  /*
+  int moves = bots[botNr].validMoves(s, heartsBroken, firstTrick);
+  int mostWins = 0;
+  int bestMove = 0;
+  for(int i = 0; i < moves; i++){
+   int wins = 0;
+   // TODO: iets met valid moves op dit punt, plus spelen op kopie van speelbord
+   bots[botNr].playCard(i);
+   for(int j = 0; j < 100; j++){
+     if(randomPlayout())
+       wins++;
+   }
+   if(wins >= mostWins){
+       bestMove = i;
+     mostWins = wins;
+   }
+  }
+  bots[botNr].playCard(bestMove);
+  */
+  return bots[botNr].playRandomCard(s, heartsBroken, firstTrick);
+}
+
 // Play a game of Hearts.
 void HeartsField::playGame(){
   // Pass cards between the players.
@@ -151,13 +175,22 @@ void HeartsField::playGame(){
   // Play turns until one (and thus, all) player has emptied the hand.
   while(!bots[0].handEmpty()){
     for(int i = turn; i < turn + AMTOFPLAYERS; i++){
-      if(i == turn){
-        cardsOnTable[i] = bots[i].playCard('$', heartsBroken, firstTrick);
-        suit = determineSuit(cardsOnTable[i]);
+      // The actual number of the player.
+      int j = i % AMTOFPLAYERS;
+      if(j == turn){
+        if(j == 0)
+          cardsOnTable[j] = playMCCard(0);
+        else
+          cardsOnTable[j] = bots[i].playRandomCard('$', heartsBroken, firstTrick);
+        suit = determineSuit(cardsOnTable[j]);
       }
-      else
-        cardsOnTable[i % AMTOFPLAYERS] = bots[i % AMTOFPLAYERS].playCard(suit, heartsBroken, firstTrick);
-      if(intToCard(cardsOnTable[i % AMTOFPLAYERS]).find('h') != std::string::npos
+      else{
+        if(j == 0)
+          cardsOnTable[j] = playMCCard(0);
+        else
+          cardsOnTable[j] = bots[j].playRandomCard(suit, heartsBroken, firstTrick);
+      }
+      if(intToCard(cardsOnTable[j]).find('h') != std::string::npos
       && heartsBroken == false){
         std::cout << "Hearts has been broken!" << std::endl;
         heartsBroken = true;

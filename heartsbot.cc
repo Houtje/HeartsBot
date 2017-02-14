@@ -126,7 +126,7 @@ bool HeartsBot::shotTheMoon(){
 // The card played is from the given suit if able.
 // Hearts can be played either when hearts have been broken,
 // or when not broken but the player does not have the suit.
-int HeartsBot::playCard(char suit, bool heartsBroken, bool firstTrick){
+int HeartsBot::playRandomCard(char suit, bool heartsBroken, bool firstTrick){
   if(starting){
     // Play the opening card.
     for(int i = 0; i < HANDSIZE; i++){

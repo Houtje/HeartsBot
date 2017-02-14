@@ -7,6 +7,7 @@ class HeartsField{
   public:
     HeartsField();
     ~HeartsField();
+    int playMCCard(int botNr);
     void setup(char *parms[]);
     void deal();
     void playGame();
