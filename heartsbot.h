@@ -23,6 +23,7 @@ class HeartsBot{
     int playRandomCard(int amtOfMoves);
     int playCard(int cardNr);
     int validMoves(int botNr, char suit, bool heartsBroken, bool firstTrick);
+    std::string getValid(int i);
     std::string intToCard(int i);
   private:
     int hand[HANDSIZE];

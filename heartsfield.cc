@@ -176,6 +176,7 @@ int HeartsField::randomPlayout(int botNr, int skipNr){
 }
 
 int HeartsField::playMCCard(int skipNr, int botNr, int moves){
+  std::cout << "Playing a MC card with " << moves << " moves." << std::endl;
   double leastPoints = 1000.0;
   int bestMove = 0;
   for(int i = 0; i < moves; i++){
@@ -183,15 +184,15 @@ int HeartsField::playMCCard(int skipNr, int botNr, int moves){
     double points = 0.0;
     HeartsField copy = *this;
     copy.cardsOnTable[botNr] = copy.bots[botNr].playCard(i);
-    for(int j = 0; j < 20; j++){
+    for(int j = 0; j < 100; j++){
       // std::cout << "--SIMULATION " << j << std::endl;
       HeartsField temp = copy;
       points += temp.randomPlayout(botNr, skipNr);
     }
-    points /= 20.0;
+    points /= 100.0;
     if(points < leastPoints){
-      std::cout << "Move " << i << " got less average points: "
-      << points << "!" << std::endl;
+      std::cout << "Move " << i << " (" << bots[botNr].getValid(i) <<
+      ") averaged less points: " << points << "!" << std::endl;
       bestMove = i;
       leastPoints = points;
     }

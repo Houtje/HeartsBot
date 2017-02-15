@@ -181,6 +181,10 @@ int HeartsBot::validMoves(int botNr, char suit, bool heartsBroken, bool firstTri
   return amtOfMoves;
 }
 
+std::string HeartsBot::getValid(int i){
+  return intToCard(valid[i]);
+}
+
 // Plays a valid card, and removes it from the hand.
 int HeartsBot::playCard(int cardNr){
   for(int i = 0; i < HANDSIZE; i++){
