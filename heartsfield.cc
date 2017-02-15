@@ -136,22 +136,23 @@ void HeartsField::evaluatePoints(){
 
 int HeartsField::playMCCard(int botNr){
   char s = (turn == botNr) ? '$' : suit;
+  HeartsField *copy = this;
   /*
   int moves = bots[botNr].validMoves(s, heartsBroken, firstTrick);
   int mostWins = 0;
   int bestMove = 0;
   for(int i = 0; i < moves; i++){
-   int wins = 0;
-   // TODO: iets met valid moves op dit punt, plus spelen op kopie van speelbord
-   bots[botNr].playCard(i);
-   for(int j = 0; j < 100; j++){
-     if(randomPlayout())
-       wins++;
-   }
-   if(wins >= mostWins){
-       bestMove = i;
-     mostWins = wins;
-   }
+    int wins = 0;
+    // TODO: iets met valid moves op dit punt, plus spelen op kopie van speelbord
+    bots[botNr].playCard(i);
+    for(int j = 0; j < 100; j++){
+      if(randomPlayout())
+        wins++;
+    }
+    if(wins >= mostWins){
+        bestMove = i;
+      mostWins = wins;
+    }
   }
   bots[botNr].playCard(bestMove);
   */
