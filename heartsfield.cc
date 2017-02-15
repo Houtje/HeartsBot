@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <cstring>
 
 // Int to string conversion
 #define ItoS(x) static_cast< std::ostringstream & >( \
@@ -13,6 +14,7 @@ HeartsField::HeartsField(){
   amtOfCards = 52;
   gameNr = 0;
   gameWon = false;
+  mc = false;
   for(int i = 0; i < AMTOFPLAYERS; i++)
     cardsOnTable[i] = 0;
 }
@@ -134,29 +136,57 @@ void HeartsField::evaluatePoints(){
   }
 }
 
-int HeartsField::playMCCard(int botNr){
-  char s = (turn == botNr) ? '$' : suit;
-  HeartsField *copy = this;
-  /*
-  int moves = bots[botNr].validMoves(s, heartsBroken, firstTrick);
+bool HeartsField::randomPlayout(int botNr){
+  // Play turns until one (and thus, all) player has emptied the hand.
+  bool skipTurn = true;
+  while(!bots[0].handEmpty()){
+    for(int i = turn; i < turn + AMTOFPLAYERS; i++){
+      // The actual number of the player.
+      int j = i % AMTOFPLAYERS;
+      if(skipTurn && j == botNr){
+        skipTurn = false;
+        continue;
+      }
+      if(j == turn){
+        int moves = bots[j].validMoves(j, '$', heartsBroken, firstTrick);
+        cardsOnTable[j] = bots[j].playRandomCard(moves);
+        suit = determineSuit(cardsOnTable[j]);
+      }
+      else{
+        int moves = bots[j].validMoves(j, suit, heartsBroken, firstTrick);
+        cardsOnTable[j] = bots[j].playRandomCard(moves);
+      }
+      if(intToCard(cardsOnTable[j]).find('h') != std::string::npos
+      && heartsBroken == false){
+        std::cout << "Hearts has been broken!" << std::endl;
+        heartsBroken = true;
+      }
+    }
+    evaluateTrick();
+  }
+  evaluatePoints();
+}
+
+int HeartsField::playMCCard(int botNr, int moves){
   int mostWins = 0;
   int bestMove = 0;
   for(int i = 0; i < moves; i++){
+    std::cout << "MOVE NUMBER " << i << std::endl;
+    HeartsField *copy = this;
     int wins = 0;
-    // TODO: iets met valid moves op dit punt, plus spelen op kopie van speelbord
-    bots[botNr].playCard(i);
+    copy->cardsOnTable[botNr] = copy->bots[botNr].playCard(i);
     for(int j = 0; j < 100; j++){
-      if(randomPlayout())
+      std::cout << "SIMULATION " << j << std::endl;
+      HeartsField *temp = copy;
+      if(temp->randomPlayout(botNr))
         wins++;
     }
     if(wins >= mostWins){
-        bestMove = i;
+      bestMove = i;
       mostWins = wins;
     }
   }
-  bots[botNr].playCard(bestMove);
-  */
-  return bots[botNr].playRandomCard(s, heartsBroken, firstTrick);
+  return bots[botNr].playCard(bestMove);
 }
 
 // Play a game of Hearts.
@@ -179,17 +209,19 @@ void HeartsField::playGame(){
       // The actual number of the player.
       int j = i % AMTOFPLAYERS;
       if(j == turn){
-        if(j == 0)
-          cardsOnTable[j] = playMCCard(0);
+        int moves = bots[j].validMoves(j, '$', heartsBroken, firstTrick);
+        if(j == 0 && mc)
+          cardsOnTable[j] = playMCCard(j, moves);
         else
-          cardsOnTable[j] = bots[i].playRandomCard('$', heartsBroken, firstTrick);
+          cardsOnTable[j] = bots[j].playRandomCard(moves);
         suit = determineSuit(cardsOnTable[j]);
       }
       else{
-        if(j == 0)
-          cardsOnTable[j] = playMCCard(0);
+        int moves = bots[j].validMoves(j, suit, heartsBroken, firstTrick);
+        if(j == 0 && mc)
+          cardsOnTable[j] = playMCCard(j, moves);
         else
-          cardsOnTable[j] = bots[j].playRandomCard(suit, heartsBroken, firstTrick);
+          cardsOnTable[j] = bots[j].playRandomCard(moves);
       }
       if(intToCard(cardsOnTable[j]).find('h') != std::string::npos
       && heartsBroken == false){
@@ -233,6 +265,8 @@ void HeartsField::deal(){
 void HeartsField::setup(char *parms[]){
   srand(time(NULL));
   int i = 0;
+  if(parms[1] != NULL && !strcmp(parms[1], "-mc"))
+    mc = true;
   while(!gameWon){
     std::cout << "Game " << i << " start." << std::endl;
     deal();

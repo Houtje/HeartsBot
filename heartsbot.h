@@ -20,10 +20,13 @@ class HeartsBot{
     bool shotTheMoon();
     int passCard();
     int getPoints();
-    int playRandomCard(char suit, bool heartsBroken, bool firstTrick);
+    int playRandomCard(int amtOfMoves);
+    int playCard(int cardNr);
+    int validMoves(int botNr, char suit, bool heartsBroken, bool firstTrick);
     std::string intToCard(int i);
   private:
     int hand[HANDSIZE];
+    int valid[HANDSIZE];
     int oldPoints;
     int points;
     bool starting;

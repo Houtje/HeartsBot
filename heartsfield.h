@@ -7,7 +7,7 @@ class HeartsField{
   public:
     HeartsField();
     ~HeartsField();
-    int playMCCard(int botNr);
+    int playMCCard(int botNr, int moves);
     void setup(char *parms[]);
     void deal();
     void playGame();
@@ -15,6 +15,7 @@ class HeartsField{
     void evaluateTrick();
     void evaluatePoints();
     char determineSuit(int card);
+    bool randomPlayout(int botNr);
     std::string intToCard(int i);
   private:
     HeartsBot bots[AMTOFPLAYERS];
@@ -27,4 +28,5 @@ class HeartsField{
     bool heartsBroken;
     bool firstTrick;
     bool gameWon;
+    bool mc;
 };
