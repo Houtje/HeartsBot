@@ -7,15 +7,15 @@ class HeartsField{
   public:
     HeartsField();
     ~HeartsField();
-    int playMCCard(int botNr, int moves);
+    int playMCCard(int skipNr, int botNr, int moves);
+    int randomPlayout(int botNr, int skipNr);
     void setup(char *parms[]);
     void deal();
     void playGame();
     void passCards();
-    void evaluateTrick();
-    void evaluatePoints();
+    void evaluateTrick(bool output);
     char determineSuit(int card);
-    bool randomPlayout(int botNr);
+    bool evaluatePoints(bool output);
     std::string intToCard(int i);
   private:
     HeartsBot bots[AMTOFPLAYERS];

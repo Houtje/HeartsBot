@@ -170,12 +170,14 @@ int HeartsBot::validMoves(int botNr, char suit, bool heartsBroken, bool firstTri
       }
     }
   }
+  /*
   std::cout << "Valid cards for bot " << botNr << ": ";
   for(int i = 0; i < HANDSIZE; i++){
     if(valid[i] != 0)
       std::cout << intToCard(valid[i]) << " ";
   }
   std::cout << std::endl;
+  */
   return amtOfMoves;
 }
 
