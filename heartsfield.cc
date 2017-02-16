@@ -1,49 +1,46 @@
 // Source code for HeartsField, by Joris Teunisse
 #include "heartsfield.h"
-#include <ctime>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
-#include <cstring>
 
 // Int to string conversion
-#define ItoS(x) static_cast< std::ostringstream & >( \
-        (std::ostringstream() << std::dec << x)).str()
+#define toString(i) static_cast< std::ostringstream & >( \
+        (std::ostringstream() << std::dec << i)).str()
 
+// Constructor
 HeartsField::HeartsField(){
-  amtOfCards = 52;
   gameNr = 0;
-  gameWon = false;
-  mc = false;
   for(int i = 0; i < AMTOFPLAYERS; i++)
     cardsOnTable[i] = 0;
 }
 
+// Destructor
 HeartsField::~HeartsField(){
 
 }
 
 // Converts an integer number to a name representing a card.
-std::string HeartsField::intToCard(int i){
+std::string HeartsField::toCard(int i){
   if(i == 0)
     return "null";
   else{
     std::string card;
     if(i < 15){
       card += "c";
-      card += ItoS(i);
+      card += toString(i);
     }
     else if(i < 28){
       card += "d";
-      card += ItoS(i - 13);
+      card += toString(i - 13);
     }
     else if(i < 41){
       card += "h";
-      card += ItoS(i - 26);
+      card += toString(i - 26);
     }
     else{
       card += "s";
-      card += ItoS(i - 39);
+      card += toString(i - 39);
     }
     return card;
   }
@@ -61,7 +58,8 @@ char HeartsField::determineSuit(int card){
     return 's';
 }
 
-// Lets all bots pass 3 cards to the next player.
+// Lets all bots pass 3 cards to the next player. All bots call their hand
+// before and after the passing.
 void HeartsField::passCards(){
   for(int i = 0; i < AMTOFPLAYERS; i++)
     bots[i].callHand(i);
@@ -70,7 +68,7 @@ void HeartsField::passCards(){
   int passAmt = 3;
   int passedCards[AMTOFPLAYERS * passAmt];
   for(int i = 0; i < AMTOFPLAYERS * passAmt; i++)
-    passedCards[i] = bots[i/3].passCard();
+    passedCards[i] = bots[i/passAmt].passCard();
   for(int i = 0; i < AMTOFPLAYERS; i++){
     for(int j = 0; j < passAmt; j++)
       bots[(i+gameNr)%4].receiveCard(passedCards[i*passAmt+j]);
@@ -82,47 +80,51 @@ void HeartsField::passCards(){
   std::cout << std::endl;
 }
 
-// Evaluate the cards on the table after a trick.
+// Evaluate the cards on the table after a trick, adding points to the bot
+// with the highest card of the suit.
 void HeartsField::evaluateTrick(bool output){
   int highest = 0;
-  int nextTurn = 0;
+  int next = 0;
   int points = 0;
   if(output)
     std::cout << "Cards on table:" << std::endl;
   for(int i = 0; i < AMTOFPLAYERS; i++){
     if(output)
-      std::cout << intToCard(cardsOnTable[i]) << std::endl;
-    if(intToCard(cardsOnTable[i]).find(suit) != std::string::npos
-    && cardsOnTable[i] > highest){
+      std::cout << toCard(cardsOnTable[i]) << std::endl;
+    if(determineSuit(cardsOnTable[i]) == suit && cardsOnTable[i] > highest){
       highest = cardsOnTable[i];
-      nextTurn = i;
+      next = i;
     }
-    if(intToCard(cardsOnTable[i]).find('h') != std::string::npos)
+    if(determineSuit(cardsOnTable[i]) == 'h')
       points++;
-    else if(intToCard(cardsOnTable[i]).find("s12") != std::string::npos)
+    else if(cardsOnTable[i] == 51)
       points += 13;
   }
-  bots[nextTurn].addPoints(points);
-  turn = nextTurn;
+  bots[next].addPoints(points);
+  first = next;
   if(firstTrick)
     firstTrick = false;
+  for(int i = 0; i < AMTOFPLAYERS; i++)
+    cardsOnTable[i] = 0;
   if(output)
-    std::cout << "Turn switches to bot " << turn << "." << std::endl << std::endl;
+    std::cout << "Turn switches to bot " << first << "." << std::endl << std::endl;
 }
 
 // Evaluates the points of the bots, and determines who is in the lead.
 // A bot wins if it has the lowest score by the time 100 points are obtained
 // by a player.
-bool HeartsField::evaluatePoints(bool output){
-  int winner = 0;
+bool HeartsField::evaluateGame(bool output){
   int loser = 0;
+  int winner = 0;
   for(int i = 0; i < AMTOFPLAYERS; i++){
     if(bots[i].shotTheMoon()){
       bots[i].addPoints(-26);
       for(int j = 1; j < AMTOFPLAYERS; i++)
         bots[(i+j)%AMTOFPLAYERS].addPoints(26);
+      break;
     }
-
+  }
+  for(int i = 0; i < AMTOFPLAYERS; i++){
     if(output)
       std::cout << "Bot " << i << " has " << bots[i].getPoints() <<
     ((bots[i].getPoints() == 1) ? " point." : " points.") << std::endl;
@@ -135,63 +137,55 @@ bool HeartsField::evaluatePoints(bool output){
   if(bots[loser].getPoints() < 100){
     if(output)
       std::cout << "Bot " << winner << " is in the lead!" << std::endl;
+    return false;
   }
-  else{
-    if(output)
-      std::cout << "Bot " << winner << " has won!" << std::endl;
-    gameWon = true;
-  }
-  return winner;
+  if(output)
+    std::cout << "Bot " << winner << " has won!" << std::endl;
+  return true;
 }
 
-int HeartsField::randomPlayout(int botNr, int skipNr){
+// Does a random playout for the current game situation, and returns how many
+// points bot botNr has gained.
+int HeartsField::randomPlayout(int botNr){
   int points = bots[botNr].getPoints();
-  // Play turns until one (and thus, all) player has emptied the hand.
+  int j;
   while(!bots[0].handEmpty()){
-    for(int i = turn; i < turn + AMTOFPLAYERS; i++){
-      if(skipNr > 0){
-        skipNr--;
+    for(int i = first; i < first + AMTOFPLAYERS; i++){
+      j = i % AMTOFPLAYERS;
+      if(cardsOnTable[j] != 0)
         continue;
-      }
-      // The actual number of the player.
-      int j = i % AMTOFPLAYERS;
-      if(j == turn){
-        int moves = bots[j].validMoves(j, '$', heartsBroken, firstTrick);
-        cardsOnTable[j] = bots[j].playRandomCard(moves);
+      int moves = bots[j].validMoves((j == first ? '$' : suit), heartsBroken, firstTrick);
+      cardsOnTable[j] = bots[j].playRandomCard(moves);
+      if(j == first)
         suit = determineSuit(cardsOnTable[j]);
-      }
-      else{
-        int moves = bots[j].validMoves(j, suit, heartsBroken, firstTrick);
-        cardsOnTable[j] = bots[j].playRandomCard(moves);
-      }
-      if(intToCard(cardsOnTable[j]).find('h') != std::string::npos
-      && heartsBroken == false){
+      if(determineSuit(cardsOnTable[j]) == 'h' && heartsBroken == false)
         heartsBroken = true;
-      }
     }
     evaluateTrick(false);
   }
-  evaluatePoints(false);
+  evaluateGame(false);
   return (bots[botNr].getPoints() - points);
 }
 
-int HeartsField::playMCCard(int skipNr, int botNr, int moves){
+// Plays a card for bot botNr from a number of valid moves, using the Monte
+// Carlo strategy to determine the best card.
+int HeartsField::playMCCard(int botNr, int moves){
   std::cout << "Playing a MC card with " << moves << " moves." << std::endl;
-  double leastPoints = 1000.0;
   int bestMove = 0;
+  double leastPoints = 1000.0;
+  double points;
+  HeartsField copy, temp;
   for(int i = 0; i < moves; i++){
-    // std::cout << "----MOVE NUMBER " << i << std::endl;
-    double points = 0.0;
-    HeartsField copy = *this;
+    points = 0.0;
+    copy = *this;
     copy.cardsOnTable[botNr] = copy.bots[botNr].playCard(i);
     for(int j = 0; j < 100; j++){
-      // std::cout << "--SIMULATION " << j << std::endl;
-      HeartsField temp = copy;
-      points += temp.randomPlayout(botNr, skipNr);
+      temp = copy;
+      points += temp.randomPlayout(botNr);
     }
     points /= 100.0;
     if(points < leastPoints){
-      std::cout << "Move " << i << " (" << bots[botNr].getValid(i) <<
+      std::cout << "Move " << i << " (" << bots[botNr].getValidCard(i) <<
       ") averaged less points: " << points << "!" << std::endl;
       bestMove = i;
       leastPoints = points;
@@ -200,90 +194,59 @@ int HeartsField::playMCCard(int skipNr, int botNr, int moves){
   return bots[botNr].playCard(bestMove);
 }
 
-// Play a game of Hearts.
-void HeartsField::playGame(){
-  // Pass cards between the players.
+// Play a game of Hearts, either with or without a Monte Carlo player.
+bool HeartsField::playGame(bool mc){
+  deal();
+
   passCards();
 
-  // Determine what bot has the 2 of clubs, which flags the starting player.
+  // Flag the starting player.
   for(int i = 0; i < AMTOFPLAYERS; i++){
     if(bots[i].handContains(2)){
       std::cout << "Bot " << i << " starts." << std::endl;
-      turn = i;
+      first = i;
       bots[i].setStarting();
     }
   }
 
   // Play turns until one (and thus, all) player has emptied the hand.
   while(!bots[0].handEmpty()){
-    for(int i = turn; i < turn + AMTOFPLAYERS; i++){
-      // The actual number of the player.
+    for(int i = first; i < first + AMTOFPLAYERS; i++){
       int j = i % AMTOFPLAYERS;
-      if(j == turn){
-        int moves = bots[j].validMoves(j, '$', heartsBroken, firstTrick);
-        if(j == 0 && mc)
-          cardsOnTable[j] = playMCCard(i, j, moves);
-        else
-          cardsOnTable[j] = bots[j].playRandomCard(moves);
+      int moves = bots[j].validMoves((j == first ? '$' : suit), heartsBroken, firstTrick);
+      if(j == 0 && mc)
+        cardsOnTable[j] = playMCCard(j, moves);
+      else
+        cardsOnTable[j] = bots[j].playRandomCard(moves);
+      if(j == first)
         suit = determineSuit(cardsOnTable[j]);
-      }
-      else{
-        int moves = bots[j].validMoves(j, suit, heartsBroken, firstTrick);
-        if(j == 0 && mc)
-          cardsOnTable[j] = playMCCard(i, j, moves);
-        else
-          cardsOnTable[j] = bots[j].playRandomCard(moves);
-      }
-      if(intToCard(cardsOnTable[j]).find('h') != std::string::npos
-      && heartsBroken == false){
+      if(determineSuit(cardsOnTable[j]) == 'h' && heartsBroken == false){
         std::cout << "Hearts has been broken!" << std::endl;
         heartsBroken = true;
       }
     }
     evaluateTrick(true);
   }
-  evaluatePoints(true);
+  return evaluateGame(true);
 }
 
-// Deal the deck to the players.
+// Deal the deck to the players, and reset several game-specific variables.
 void HeartsField::deal(){
-  // Initialize deck of cards
-  int deck[amtOfCards];
-  for(int i = 0; i < amtOfCards; i++)
+  int deck[AMTOFCARDS];
+  for(int i = 0; i < AMTOFCARDS; i++)
     deck[i] = i + 2;
-
-  // Shuffle deck
   for(int i = 0; i < 100; i++){
-    int r = rand() % amtOfCards;
+    int r = rand() % AMTOFCARDS;
     int temp = deck[r];
-    deck[r] = deck[i % amtOfCards];
-    deck[i % amtOfCards] = temp;
+    deck[r] = deck[i % AMTOFCARDS];
+    deck[i % AMTOFCARDS] = temp;
   }
-
-  // Give every bot a now-random hand
-  int handSize = amtOfCards / AMTOFPLAYERS;
-  for(int i = 0; i < amtOfCards; i++)
-    bots[i / handSize].addToHand(deck[i]);
+  for(int i = 0; i < AMTOFCARDS; i++)
+    bots[i / (AMTOFCARDS / AMTOFPLAYERS)].addToHand(deck[i]);
 
   // Hearts have not yet been broken; has to be reset for consecutive games.
   // Also, it is the first trick, and the next game.
   heartsBroken = false;
   firstTrick = true;
   gameNr++;
-}
-
-// Sets up a game of Hearts.
-void HeartsField::setup(char *parms[]){
-  srand(time(NULL));
-  int i = 0;
-  if(parms[1] != NULL && !strcmp(parms[1], "-mc"))
-    mc = true;
-  while(!gameWon){
-    std::cout << "Game " << i << " start." << std::endl;
-    deal();
-    playGame();
-    if(!gameWon)
-      std::cout << "End of game " << i << "." << std::endl << std::endl;
-    i++;
-  }
 }

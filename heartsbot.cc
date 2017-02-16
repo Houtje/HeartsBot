@@ -1,14 +1,14 @@
 // Source code for HeartsBot, by Joris Teunisse
 #include "heartsbot.h"
-#include <ctime>
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 
 // Int to string conversion
-#define ItoS(x) static_cast< std::ostringstream & >( \
+#define toString(x) static_cast< std::ostringstream & >( \
         (std::ostringstream() << std::dec << x)).str()
 
+// Constructor
 HeartsBot::HeartsBot(){
   oldPoints = 0;
   points = 0;
@@ -19,6 +19,7 @@ HeartsBot::HeartsBot(){
   }
 }
 
+// Destructor
 HeartsBot::~HeartsBot(){
 
 }
@@ -39,27 +40,31 @@ int HeartsBot::getPoints(){
   return points;
 }
 
+std::string HeartsBot::getValidCard(int i){
+  return toCard(valid[i]);
+}
+
 // Converts an integer number to a name representing a card.
-std::string HeartsBot::intToCard(int i){
+std::string HeartsBot::toCard(int i){
   if(i == 0)
     return "null";
   else{
     std::string card;
     if(i < 15){
       card += "c";
-      card += ItoS(i);
+      card += toString(i);
     }
     else if(i < 28){
       card += "d";
-      card += ItoS(i - 13);
+      card += toString(i - 13);
     }
     else if(i < 41){
       card += "h";
-      card += ItoS(i - 26);
+      card += toString(i - 26);
     }
     else{
       card += "s";
-      card += ItoS(i - 39);
+      card += toString(i - 39);
     }
     return card;
   }
@@ -115,7 +120,7 @@ bool HeartsBot::handContains(int card){
 
 // Checks whether the given card belongs to a given suit.
 bool HeartsBot::checkSuit(int card, char suit){
-  return (intToCard(card).find(suit) != std::string::npos);
+  return (toCard(card).find(suit) != std::string::npos);
 }
 
 // Checks whether the bot has 'shot the moon': this means the bot
@@ -128,7 +133,7 @@ bool HeartsBot::shotTheMoon(){
 // The card played is from the given suit if able.
 // Hearts can be played either when hearts have been broken,
 // or when not broken but the player does not have the suit.
-int HeartsBot::validMoves(int botNr, char suit, bool heartsBroken, bool firstTrick){
+int HeartsBot::validMoves(char suit, bool heartsBroken, bool firstTrick){
   int amtOfMoves = 0;
   for(int i = 0; i < HANDSIZE; i++)
     valid[i] = 0;
@@ -174,15 +179,11 @@ int HeartsBot::validMoves(int botNr, char suit, bool heartsBroken, bool firstTri
   std::cout << "Valid cards for bot " << botNr << ": ";
   for(int i = 0; i < HANDSIZE; i++){
     if(valid[i] != 0)
-      std::cout << intToCard(valid[i]) << " ";
+      std::cout << toCard(valid[i]) << " ";
   }
   std::cout << std::endl;
   */
   return amtOfMoves;
-}
-
-std::string HeartsBot::getValid(int i){
-  return intToCard(valid[i]);
 }
 
 // Plays a valid card, and removes it from the hand.
@@ -224,6 +225,6 @@ void HeartsBot::addToHand(int card){
 void HeartsBot::callHand(int i){
   std::cout << "Hand of bot " << i << ":" << std::endl;
   for(int j = 0; j < HANDSIZE; j++)
-    std::cout << intToCard(hand[j]) << " ";
+    std::cout << toCard(hand[j]) << " ";
   std::cout << std::endl;
 }
