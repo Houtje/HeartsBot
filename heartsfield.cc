@@ -11,6 +11,7 @@
 // Constructor
 HeartsField::HeartsField(){
   gameNr = 0;
+  winner = 0;
   for(int i = 0; i < AMTOFPLAYERS; i++)
     cardsOnTable[i] = 0;
 }
@@ -18,6 +19,10 @@ HeartsField::HeartsField(){
 // Destructor
 HeartsField::~HeartsField(){
 
+}
+
+int HeartsField::getWinner(){
+  return winner;
 }
 
 // Converts an integer number to a name representing a card.
@@ -112,10 +117,9 @@ void HeartsField::evaluateTrick(bool output){
 
 // Evaluates the points of the bots, and determines who is in the lead.
 // A bot wins if it has the lowest score by the time 100 points are obtained
-// by a player.
+// by a player. Returns whether the game has ended.
 bool HeartsField::evaluateGame(bool output){
   int loser = 0;
-  int winner = 0;
   for(int i = 0; i < AMTOFPLAYERS; i++){
     if(bots[i].shotTheMoon()){
       bots[i].addPoints(-26);
@@ -196,6 +200,11 @@ int HeartsField::playMCCard(int botNr, int moves){
 
 // Play a game of Hearts, either with or without a Monte Carlo player.
 bool HeartsField::playGame(bool mc){
+  // Several variable changes to indicate the next game.
+  heartsBroken = false;
+  firstTrick = true;
+  gameNr++;
+
   deal();
 
   passCards();
@@ -243,10 +252,4 @@ void HeartsField::deal(){
   }
   for(int i = 0; i < AMTOFCARDS; i++)
     bots[i / (AMTOFCARDS / AMTOFPLAYERS)].addToHand(deck[i]);
-
-  // Hearts have not yet been broken; has to be reset for consecutive games.
-  // Also, it is the first trick, and the next game.
-  heartsBroken = false;
-  firstTrick = true;
-  gameNr++;
 }

@@ -11,6 +11,7 @@ class HeartsField{
     bool evaluateGame(bool output);
     bool playGame(bool mc);
     char determineSuit(int card);
+    int getWinner();
     int playMCCard(int botNr, int moves);
     int randomPlayout(int botNr);
     std::string toCard(int i);
@@ -23,6 +24,7 @@ class HeartsField{
     int cardsOnTable[AMTOFPLAYERS];
     int gameNr;
     int first;
+    int winner;
     bool firstTrick;
     bool heartsBroken;
 };

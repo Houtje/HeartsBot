@@ -103,7 +103,7 @@ bool HeartsBot::handEmpty(){
 // Checks whether the hand only contains hearts.
 bool HeartsBot::justHearts(){
   for(int i = 0; i < HANDSIZE; i++){
-    if(!(checkSuit(hand[i], 'h') || hand[i] == 0))
+    if(!checkSuit(hand[i], 'h') && hand[i] != 0)
       return false;
   }
   return true;
@@ -148,7 +148,6 @@ int HeartsBot::validMoves(char suit, bool heartsBroken, bool firstTrick){
     }
   }
   else{
-    // Play a card (from the given suit, if able).
     if(suit != '$'){
       for(int i = 0; i < HANDSIZE; i++){
         if(checkSuit(hand[i], suit)){
@@ -166,7 +165,7 @@ int HeartsBot::validMoves(char suit, bool heartsBroken, bool firstTrick){
         // -It is not Hearts while they have not been broken and the bot has
         // cards with other suits left
         if((hand[i] != 0) &&
-        ((firstTrick && (!checkSuit(hand[i], 'h') && !hand[i] == 52))
+        ((firstTrick && (!checkSuit(hand[i], 'h') && hand[i] != 52))
         || suit != '$'
         || !(checkSuit(hand[i], 'h') && heartsBroken == false && !justHearts()))){
           valid[amtOfMoves] = hand[i];
@@ -175,18 +174,10 @@ int HeartsBot::validMoves(char suit, bool heartsBroken, bool firstTrick){
       }
     }
   }
-  /*
-  std::cout << "Valid cards for bot " << botNr << ": ";
-  for(int i = 0; i < HANDSIZE; i++){
-    if(valid[i] != 0)
-      std::cout << toCard(valid[i]) << " ";
-  }
-  std::cout << std::endl;
-  */
   return amtOfMoves;
 }
 
-// Plays a valid card, and removes it from the hand.
+// Plays #cardNr of the valid cards, and removes it from the hand.
 int HeartsBot::playCard(int cardNr){
   for(int i = 0; i < HANDSIZE; i++){
     if(hand[i] == valid[cardNr]){
@@ -197,7 +188,7 @@ int HeartsBot::playCard(int cardNr){
   return valid[cardNr];
 }
 
-// Plays a random card, and removes it from the hand.
+// Plays a random valid card, and removes it from the hand.
 int HeartsBot::playRandomCard(int amtOfMoves){
   int r = rand() % amtOfMoves;
   for(int i = 0; i < HANDSIZE; i++){
