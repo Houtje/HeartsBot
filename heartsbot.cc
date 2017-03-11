@@ -70,16 +70,6 @@ std::string HeartsBot::toCard(int i){
   }
 }
 
-// Receive a card and add it to the hand.
-void HeartsBot::receiveCard(int card){
-  for(int j = 0; j < HANDSIZE; j++){
-    if(hand[j] == 0){
-      hand[j] = card;
-      break;
-    }
-  }
-}
-
 // Passes a random card to the field.
 int HeartsBot::passCard(){
   int passedCard = 0;

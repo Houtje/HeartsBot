@@ -2,16 +2,16 @@
 all: hearts
 
 hearts: main.o heartsbot.o heartsfield.o
-	g++ main.o heartsbot.o heartsfield.o -o hearts
+	g++ -O2 main.o heartsbot.o heartsfield.o -o hearts
 
 main.o: main.cc
-	g++ -c main.cc
+	g++ -O2 -c main.cc
 
 heartsbot.o: heartsbot.cc
-	g++ -c heartsbot.cc
+	g++ -O2 -c heartsbot.cc
 
 heartsfield.o: heartsfield.cc
-	g++ -c heartsfield.cc
+	g++ -O2 -c heartsfield.cc
 
 clean:
 	rm *o hearts

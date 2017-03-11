@@ -76,7 +76,7 @@ void HeartsField::passCards(){
     passedCards[i] = bots[i/passAmt].passCard();
   for(int i = 0; i < AMTOFPLAYERS; i++){
     for(int j = 0; j < passAmt; j++)
-      bots[(i+gameNr)%4].receiveCard(passedCards[i*passAmt+j]);
+      bots[(i+gameNr)%4].addToHand(passedCards[i*passAmt+j]);
   }
 
   std::cout << "Hands after passing:" << std::endl;
@@ -185,6 +185,18 @@ int HeartsField::playMCCard(int botNr, int moves){
     copy.cardsOnTable[botNr] = copy.bots[botNr].playCard(i);
     for(int j = 0; j < 100; j++){
       temp = copy;
+      /* TODO: RANDOMDISTRIBUTE
+       * -voor alle kaarten in handen vd bots
+       * -get de kaart en kijk of ie known is
+       * -zo ja geef m terug, zo nee zet m in een deck
+       * -shuffle t deck (kostersmethode) en geef het terug met addtohand
+       *
+       * TODO 2: die known functie maken
+       * -elke opgegooide kaart vd anderen hieraan toevoegen
+       * -ook de 3 kaarten die je passt.
+       * -advanced: ook een unknownfunctie die meldt welke suits een bot
+       *  niet heeft, hiermee wordt rekening gehouden door de functie hierboven.
+       */
       points += temp.randomPlayout(botNr);
     }
     points /= 100.0;
@@ -239,7 +251,7 @@ bool HeartsField::playGame(bool mc){
   return evaluateGame(true);
 }
 
-// Deal the deck to the players, and reset several game-specific variables.
+// Deal the deck to the players.
 void HeartsField::deal(){
   int deck[AMTOFCARDS];
   for(int i = 0; i < AMTOFCARDS; i++)

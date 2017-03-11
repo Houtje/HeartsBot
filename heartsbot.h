@@ -23,7 +23,6 @@ class HeartsBot{
     void addToHand(int card);
     void backupPoints();
     void callHand(int i);
-    void receiveCard(int card);
     void setStarting();
   private:
     bool starting;
