@@ -186,10 +186,7 @@ int HeartsField::playMCCard(int botNr, int moves, bool clairvoyant){
     for(int j = 0; j < 100; j++){
       temp = copy;
       /* TODO: RANDOMDISTRIBUTE
-       * -voor alle kaarten in handen vd bots
-       * -get de kaart en kijk of ie known is
-       * -zo ja geef m terug, zo nee zet m in een deck
-       * -shuffle t deck (kostersmethode) en geef het terug met addtohand
+       * -Kostersmethode deck shuffling
        *
        * TODO 2: die known functie maken
        * -elke opgegooide kaart vd anderen hieraan toevoegen
@@ -221,9 +218,6 @@ int HeartsField::playMCCard(int botNr, int moves, bool clairvoyant){
             cardNr++;
           }
         }
-        /*for(int kat = 0; kat < AMTOFCARDS; kat++)
-          std::cout << toCard(toShuffle[kat]) << " ";
-        std::cout << "#:" << cardsInDeck << std::endl;*/
         if(cardsInDeck != 0)
           temp.dealUnknown(toShuffle, cardsInDeck, botNr, toDeal);
       }
