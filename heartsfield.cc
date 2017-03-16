@@ -224,7 +224,8 @@ int HeartsField::playMCCard(int botNr, int moves, bool clairvoyant){
         /*for(int kat = 0; kat < AMTOFCARDS; kat++)
           std::cout << toCard(toShuffle[kat]) << " ";
         std::cout << "#:" << cardsInDeck << std::endl;*/
-        temp.dealUnknown(toShuffle, cardsInDeck, botNr, toDeal);
+        if(cardsInDeck != 0)
+          temp.dealUnknown(toShuffle, cardsInDeck, botNr, toDeal);
       }
       points += temp.randomPlayout(botNr);
     }
@@ -316,9 +317,4 @@ void HeartsField::dealUnknown(int *deck, int cardsInDeck, int player, int *toDea
     bots[receiver].addToHand(deck[i]);
     toDeal[receiver]--;
   }
-
-  std::cout << "After shuffling:" << std::endl;
-  for(int i = 0; i < AMTOFPLAYERS; i++)
-    bots[i].callHand(i);
-  std::cout << std::endl;
 }
