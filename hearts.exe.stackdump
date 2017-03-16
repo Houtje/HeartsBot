@@ -1,9 +1,8 @@
-Exception: STATUS_ACCESS_VIOLATION at eip=61158DAA
-eax=00000000 ebx=0028CCAC ecx=00000002 edx=0040506A esi=612F22E2 edi=611D8DAE
-ebp=0028CC88 esp=0028CB58 program=C:\cygwin\home\Joris\HeartsBot\hearts.exe, pid 1716, thread main
+Exception: STATUS_INTEGER_DIVIDE_BY_ZERO at eip=00403266
+eax=12A6CC60 ebx=00000000 ecx=00000000 edx=00000000 esi=00000000 edi=0028C628
+ebp=0028CAF8 esp=0028C570 program=C:\cygwin\home\Joris\HeartsBot\hearts.exe, pid 2192, thread main
 cs=0023 ds=002B es=002B fs=0053 gs=002B ss=002B
 Stack trace:
 Frame     Function  Args
-0028CC88  61158DAA (00000002, 0028CCAC, 80010108, 61007B2A)
-0028CD28  61007B8F (00000000, 0028CD84, 61006BC0, 00000000)
+0028CAF8  00403266 (8003D310, 00000000, 00000001, 00000000)
 End of stack trace

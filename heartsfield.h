@@ -16,7 +16,7 @@ class HeartsField{
     int randomPlayout(int botNr);
     std::string toCard(int i);
     void deal();
-    void dealUnknown(int *deck, int cardsInDeck, int player);
+    void dealUnknown(int *deck, int cardsInDeck, int player, int *toDeal);
     void evaluateTrick(bool output);
     void passCards();
   private:

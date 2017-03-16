@@ -199,6 +199,7 @@ int HeartsField::playMCCard(int botNr, int moves, bool clairvoyant){
        */
       if(!clairvoyant){
         int toShuffle[AMTOFCARDS] = {0};
+        int toDeal[AMTOFPLAYERS] = {0};
         int cardsInDeck = 0;
         for(int k = botNr+1; k < botNr + AMTOFPLAYERS; k++){
           int cardNr = 0;
@@ -212,6 +213,7 @@ int HeartsField::playMCCard(int botNr, int moves, bool clairvoyant){
             }
             if(!temp.bots[botNr].knowsCard(card)){
               toShuffle[cardsInDeck] = card;
+              toDeal[k]++;
               cardsInDeck++;
             }
             else
@@ -222,7 +224,7 @@ int HeartsField::playMCCard(int botNr, int moves, bool clairvoyant){
         /*for(int kat = 0; kat < AMTOFCARDS; kat++)
           std::cout << toCard(toShuffle[kat]) << " ";
         std::cout << "#:" << cardsInDeck << std::endl;*/
-        temp.dealUnknown(toShuffle, cardsInDeck, botNr);
+        temp.dealUnknown(toShuffle, cardsInDeck, botNr, toDeal);
       }
       points += temp.randomPlayout(botNr);
     }
@@ -293,23 +295,28 @@ void HeartsField::deal(){
     bots[i / (AMTOFCARDS / AMTOFPLAYERS)].addToHand(deck[i]);
 }
 
-void HeartsField::dealUnknown(int *deck, int cardsInDeck, int player){
+void HeartsField::dealUnknown(int *deck, int cardsInDeck, int player, int *toDeal){
   for(int i = 0; i < 100; i++){
     int r = rand() % cardsInDeck;
     int temp = deck[r];
     deck[r] = deck[i % cardsInDeck];
     deck[i % cardsInDeck] = temp;
   }
-  
-  int j = player;
+
+  int receiver = (player+1) % AMTOFPLAYERS;
   for(int i = 0; i < cardsInDeck; i++){
-    j++;
-    if(j % AMTOFPLAYERS == player)
-      j++;
-    // std::cout << "addtohand " << player % AMTOFPLAYERS << " " << toCard(deck[i]) << std::endl;
-    bots[j % AMTOFPLAYERS].addToHand(deck[i]);
+    while(toDeal[receiver] == 0){
+      if(receiver == player)
+        std::cout << "ERROR: Not enough cards can be dealt back!" << std::endl;
+      else{
+        receiver++;
+        receiver %= AMTOFPLAYERS;
+      }
+    }
+    bots[receiver].addToHand(deck[i]);
+    toDeal[receiver]--;
   }
-    
+
   std::cout << "After shuffling:" << std::endl;
   for(int i = 0; i < AMTOFPLAYERS; i++)
     bots[i].callHand(i);
