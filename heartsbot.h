@@ -10,9 +10,12 @@ class HeartsBot{
     bool checkSuit(int card, char suit);
     bool handContains(int card);
     bool handEmpty();
+    bool handFull();
+    bool knowsCard(int card);
     bool justHearts();
     bool shotTheMoon();
-    int passCard();
+    int passCard(int cardNr);
+    int passRandomCard();
     int getPoints();
     int playRandomCard(int amtOfMoves);
     int playCard(int cardNr);

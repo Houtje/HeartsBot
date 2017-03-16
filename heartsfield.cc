@@ -73,7 +73,7 @@ void HeartsField::passCards(){
   int passAmt = 3;
   int passedCards[AMTOFPLAYERS * passAmt];
   for(int i = 0; i < AMTOFPLAYERS * passAmt; i++)
-    passedCards[i] = bots[i/passAmt].passCard();
+    passedCards[i] = bots[i/passAmt].passRandomCard();
   for(int i = 0; i < AMTOFPLAYERS; i++){
     for(int j = 0; j < passAmt; j++)
       bots[(i+gameNr)%4].addToHand(passedCards[i*passAmt+j]);
@@ -173,7 +173,7 @@ int HeartsField::randomPlayout(int botNr){
 
 // Plays a card for bot botNr from a number of valid moves, using the Monte
 // Carlo strategy to determine the best card.
-int HeartsField::playMCCard(int botNr, int moves){
+int HeartsField::playMCCard(int botNr, int moves, bool clairvoyant){
   std::cout << "Playing a MC card with " << moves << " moves." << std::endl;
   int bestMove = 0;
   double leastPoints = 1000.0;
@@ -197,6 +197,33 @@ int HeartsField::playMCCard(int botNr, int moves){
        * -advanced: ook een unknownfunctie die meldt welke suits een bot
        *  niet heeft, hiermee wordt rekening gehouden door de functie hierboven.
        */
+      if(!clairvoyant){
+        int toShuffle[AMTOFCARDS] = {0};
+        int cardsInDeck = 0;
+        for(int k = botNr+1; k < botNr + AMTOFPLAYERS; k++){
+          int cardNr = 0;
+          while(true){
+            int card = temp.bots[k % AMTOFPLAYERS].passCard(cardNr);
+            if(card == -1)
+              break;
+            else if(card == 0){
+              cardNr++;
+              continue;
+            }
+            if(!temp.bots[botNr].knowsCard(card)){
+              toShuffle[cardsInDeck] = card;
+              cardsInDeck++;
+            }
+            else
+              temp.bots[k % AMTOFPLAYERS].addToHand(card);
+            cardNr++;
+          }
+        }
+        /*for(int kat = 0; kat < AMTOFCARDS; kat++)
+          std::cout << toCard(toShuffle[kat]) << " ";
+        std::cout << "#:" << cardsInDeck << std::endl;*/
+        temp.dealUnknown(toShuffle, cardsInDeck, botNr);
+      }
       points += temp.randomPlayout(botNr);
     }
     points /= 100.0;
@@ -236,7 +263,7 @@ bool HeartsField::playGame(bool mc){
       int j = i % AMTOFPLAYERS;
       int moves = bots[j].validMoves((j == first ? '$' : suit), heartsBroken, firstTrick);
       if(j == 0 && mc)
-        cardsOnTable[j] = playMCCard(j, moves);
+        cardsOnTable[j] = playMCCard(j, moves, false);
       else
         cardsOnTable[j] = bots[j].playRandomCard(moves);
       if(j == first)
@@ -264,4 +291,27 @@ void HeartsField::deal(){
   }
   for(int i = 0; i < AMTOFCARDS; i++)
     bots[i / (AMTOFCARDS / AMTOFPLAYERS)].addToHand(deck[i]);
+}
+
+void HeartsField::dealUnknown(int *deck, int cardsInDeck, int player){
+  for(int i = 0; i < 100; i++){
+    int r = rand() % cardsInDeck;
+    int temp = deck[r];
+    deck[r] = deck[i % cardsInDeck];
+    deck[i % cardsInDeck] = temp;
+  }
+  
+  int j = player;
+  for(int i = 0; i < cardsInDeck; i++){
+    j++;
+    if(j % AMTOFPLAYERS == player)
+      j++;
+    // std::cout << "addtohand " << player % AMTOFPLAYERS << " " << toCard(deck[i]) << std::endl;
+    bots[j % AMTOFPLAYERS].addToHand(deck[i]);
+  }
+    
+  std::cout << "After shuffling:" << std::endl;
+  for(int i = 0; i < AMTOFPLAYERS; i++)
+    bots[i].callHand(i);
+  std::cout << std::endl;
 }

@@ -70,8 +70,19 @@ std::string HeartsBot::toCard(int i){
   }
 }
 
+// Passes card cardNr to the field, if it exists.
+int HeartsBot::passCard(int cardNr){
+  if(cardNr >= 0 && cardNr < HANDSIZE){
+    int passedCard = hand[cardNr];
+    hand[cardNr] = 0;
+    return passedCard;
+  }
+  else
+    return -1;
+}
+
 // Passes a random card to the field.
-int HeartsBot::passCard(){
+int HeartsBot::passRandomCard(){
   int passedCard = 0;
   int randomCard = rand() % HANDSIZE;
   while(hand[randomCard] == 0)
@@ -85,6 +96,15 @@ int HeartsBot::passCard(){
 bool HeartsBot::handEmpty(){
   for(int i = 0; i < HANDSIZE; i++){
     if(hand[i] != 0)
+      return false;
+  }
+  return true;
+}
+
+// Check whether the hand is full.
+bool HeartsBot::handFull(){
+  for(int i = 0; i < HANDSIZE; i++){
+    if(hand[i] == 0)
       return false;
   }
   return true;
@@ -117,6 +137,11 @@ bool HeartsBot::checkSuit(int card, char suit){
 // has obtained all the penalty cards.
 bool HeartsBot::shotTheMoon(){
   return ((oldPoints - points) == 26) ? true : false;
+}
+
+bool HeartsBot::knowsCard(int card){
+  // TODO
+  return false;
 }
 
 // Checks the valid moves for a given situation.

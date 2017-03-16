@@ -12,10 +12,11 @@ class HeartsField{
     bool playGame(bool mc);
     char determineSuit(int card);
     int getWinner();
-    int playMCCard(int botNr, int moves);
+    int playMCCard(int botNr, int moves, bool clairvoyant);
     int randomPlayout(int botNr);
     std::string toCard(int i);
     void deal();
+    void dealUnknown(int *deck, int cardsInDeck, int player);
     void evaluateTrick(bool output);
     void passCards();
   private:
