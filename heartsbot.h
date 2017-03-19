@@ -1,7 +1,9 @@
 // Header for HeartsBot, by Joris Teunisse
 #include <string>
 
-#define HANDSIZE 13
+#define AMTOFPLAYERS 4
+#define AMTOFCARDS 52
+#define HANDSIZE (AMTOFCARDS / AMTOFPLAYERS)
 
 class HeartsBot{
   public:
@@ -26,10 +28,13 @@ class HeartsBot{
     void addToHand(int card);
     void backupPoints();
     void callHand(int i);
+    void resetKnown();
     void setStarting();
   private:
     bool starting;
     int hand[HANDSIZE];
+    int knownCards[AMTOFCARDS];
+    int amtKnown;
     int oldPoints;
     int points;
     int valid[HANDSIZE];

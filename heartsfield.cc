@@ -186,8 +186,7 @@ int HeartsField::playMCCard(int botNr, int moves, bool clairvoyant){
     for(int j = 0; j < 100; j++){
       temp = copy;
       /* TODO: die known functie maken
-       * -elke opgegooide kaart vd anderen hieraan toevoegen
-       * -ook de 3 kaarten die je passt.
+       * -De 3 kaarten die je passt.
        * -advanced: ook een unknownfunctie die meldt welke suits een bot
        *  niet heeft, hiermee wordt rekening gehouden door de functie hierboven.
        */
@@ -237,6 +236,9 @@ bool HeartsField::playGame(bool mc){
   heartsBroken = false;
   firstTrick = true;
   gameNr++;
+
+  for(int i = 0; i < AMTOFPLAYERS; i++)
+    bots[i].resetKnown();
 
   deal();
 

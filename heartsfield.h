@@ -1,9 +1,6 @@
 // Header for HeartsField, by Joris Teunisse
 #include "heartsbot.h"
 
-#define AMTOFPLAYERS 4
-#define AMTOFCARDS 52
-
 class HeartsField{
   public:
     HeartsField();

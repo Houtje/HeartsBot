@@ -10,9 +10,12 @@
 
 // Constructor
 HeartsBot::HeartsBot(){
+  amtKnown = 0;
   oldPoints = 0;
   points = 0;
   starting = false;
+  for(int i = 0; i < AMTOFCARDS; i++)
+    knownCards[i] = 0;
   for(int i = 0; i < HANDSIZE; i++){
     hand[i] = 0;
     valid[i] = 0;
@@ -42,6 +45,12 @@ int HeartsBot::getPoints(){
 
 std::string HeartsBot::getValidCard(int i){
   return toCard(valid[i]);
+}
+
+void HeartsBot::resetKnown(){
+  amtKnown = 0;
+  for(int i = 0; i < AMTOFCARDS; i++)
+    knownCards[i] = 0;
 }
 
 // Converts an integer number to a name representing a card.
@@ -89,6 +98,8 @@ int HeartsBot::passRandomCard(){
     randomCard = rand() % HANDSIZE;
   passedCard = hand[randomCard];
   hand[randomCard] = 0;
+  knownCards[amtKnown] = passedCard;
+  amtKnown++;
   return passedCard;
 }
 
@@ -141,6 +152,10 @@ bool HeartsBot::shotTheMoon(){
 
 bool HeartsBot::knowsCard(int card){
   // TODO
+  for(int i = 0; i < amtKnown; i++){
+    if(knownCards[i] == card)
+      return true;
+  }
   return false;
 }
 
