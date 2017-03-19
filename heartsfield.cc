@@ -185,10 +185,7 @@ int HeartsField::playMCCard(int botNr, int moves, bool clairvoyant){
     copy.cardsOnTable[botNr] = copy.bots[botNr].playCard(i);
     for(int j = 0; j < 100; j++){
       temp = copy;
-      /* TODO: RANDOMDISTRIBUTE
-       * -Kostersmethode deck shuffling
-       *
-       * TODO 2: die known functie maken
+      /* TODO: die known functie maken
        * -elke opgegooide kaart vd anderen hieraan toevoegen
        * -ook de 3 kaarten die je passt.
        * -advanced: ook een unknownfunctie die meldt welke suits een bot
@@ -275,30 +272,29 @@ bool HeartsField::playGame(bool mc){
   return evaluateGame(true);
 }
 
+void HeartsField::shuffleDeck(int *deck, int size){
+  int r, temp;
+  for(int i = size-1; i > 0; i--){
+    r = rand() % (i+1);
+    temp = deck[r];
+    deck[r] = deck[i];
+    deck[i] = temp;
+  }
+}
+
 // Deal the deck to the players.
 void HeartsField::deal(){
   int deck[AMTOFCARDS];
   for(int i = 0; i < AMTOFCARDS; i++)
     deck[i] = i + 2;
-  for(int i = 0; i < 100; i++){
-    int r = rand() % AMTOFCARDS;
-    int temp = deck[r];
-    deck[r] = deck[i % AMTOFCARDS];
-    deck[i % AMTOFCARDS] = temp;
-  }
+  shuffleDeck(deck, AMTOFCARDS);
   for(int i = 0; i < AMTOFCARDS; i++)
     bots[i / (AMTOFCARDS / AMTOFPLAYERS)].addToHand(deck[i]);
 }
 
 void HeartsField::dealUnknown(int *deck, int cardsInDeck, int player, int *toDeal){
-  for(int i = 0; i < 100; i++){
-    int r = rand() % cardsInDeck;
-    int temp = deck[r];
-    deck[r] = deck[i % cardsInDeck];
-    deck[i % cardsInDeck] = temp;
-  }
-
   int receiver = (player+1) % AMTOFPLAYERS;
+  shuffleDeck(deck, cardsInDeck);
   for(int i = 0; i < cardsInDeck; i++){
     while(toDeal[receiver] == 0){
       if(receiver == player)

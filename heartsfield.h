@@ -19,6 +19,7 @@ class HeartsField{
     void dealUnknown(int *deck, int cardsInDeck, int player, int *toDeal);
     void evaluateTrick(bool output);
     void passCards();
+    void shuffleDeck(int *deck, int size);
   private:
     HeartsBot bots[AMTOFPLAYERS];
     char suit;
