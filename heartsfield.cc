@@ -186,9 +186,11 @@ int HeartsField::playMCCard(int botNr, int moves, bool clairvoyant){
     for(int j = 0; j < 100; j++){
       temp = copy;
       /* TODO: die known functie maken
-       * -De 3 kaarten die je passt.
        * -advanced: ook een unknownfunctie die meldt welke suits een bot
        *  niet heeft, hiermee wordt rekening gehouden door de functie hierboven.
+       * Dus: als een vd bots afwijkt van de gegeven suit, dit known maken
+       * aan de rest van de spelers mbt het niet hebben van die suit.
+       * Die suit hoeft dan bij herverdeling niet gedeald te worden.
        */
       if(!clairvoyant){
         int toShuffle[AMTOFCARDS] = {0};
